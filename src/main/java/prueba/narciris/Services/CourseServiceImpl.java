@@ -9,6 +9,7 @@ import prueba.narciris.Models.Tutor;
 import prueba.narciris.Repositories.ICourseRepository;
 import prueba.narciris.Repositories.ITutorRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,4 +87,14 @@ public class CourseServiceImpl implements ICourseSevice{
         courseRepository.delete(course);
         return CoursesResponseDTo.fromEntity(course);
     }
+
+     @Override
+     public List<CoursesResponseDTo> filterCourses(String name, BigDecimal minPrice, Long tutorId) {
+         return courseRepository.findAll().stream()
+                 .filter(c -> name == null || c.getName().toLowerCase().contains(name.toLowerCase()))
+                 .filter(c -> minPrice == null || c.getPrice().compareTo(minPrice) >= 0)
+                 .filter(c -> tutorId == null || c.getTutor().getId().equals(tutorId))
+                 .map(CoursesResponseDTo::fromEntity)
+                 .toList();
+     }
 }
